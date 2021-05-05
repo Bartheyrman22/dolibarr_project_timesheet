@@ -77,7 +77,7 @@ class pdf_rat extends ModelPDFTimesheetReport
         //$this->posxprogress=$this->marge_gauche+140;
         //$this->posxdatestart=$this->marge_gauche+152;
         //$this->posxdateend=$this->marge_gauche+170;
-        $this->posxduration=$this->marge_gauche+175;
+        $this->posxduration=$this->marge_gauche+160;
         if($this->page_largeur < 210) {
             // To work with US executive format {
             $this->posxref-=20;
@@ -224,13 +224,13 @@ public function writeFile($object, $outputlangs)
         $height_note=0;
         $tab_height = $writable_height - $height_note;
         //$cur_tab_height=$tab_height;
-        $HeightSignBox=30;
+        $HeightSignBox=20;
         $heightforinfotot = 40;
         $heightforfooter = $this->marge_basse+1;        // Height reserved to output the footer(value include bottom margin)
         $pageposbefore=0;
         $heightoftitleline =6;
         $bottomlasttab=$this->page_hauteur - $heightforinfotot - $heightforfooter + 1;
-        $widthSignBox=($this->page_largeur-$this->marge_gauche-$this->marge_droite)/2-1;
+        $widthSignBox=($this->page_largeur-$this->marge_gauche-$this->marge_droite)/2-0.5;
         $cur_tab_height=$tab_height;
         $pdf->AddPage();
         //init pdf cursor
@@ -327,6 +327,7 @@ public function writeFile($object, $outputlangs)
             $pdf->SetFont('', '', $default_font_size - 1);
             $pdf->writeHTMLCell(80, 3, $this->marge_gauche+1, $bottomlasttab+7, $outputlangs->transnoentities('employeeSignature'), 0, 1);
             $pdf->writeHTMLCell(80, 3, $this->marge_gauche+$widthSignBox+2, $bottomlasttab+7, $outputlangs->transnoentities('customerSignature'), 0, 1);
+            $pdf->writeHTMLCell($widthSignBox*2, 3, $this->marge_gauche+1, $bottomlasttab+$HeightSignBox+7, '<small>Protest op deze timesheet dient binnen de 5 werkdagen te gebeuren. Bij gebreke aan protest binnen de 5 werkdagen of bij gebreke aan ondertekening en tournering binnen de 5 werkdagen wordt de timesheet als  goedgekeurd beschouwd en zal er worden gefactureerd conform de timesheet.</small>', 0, 1);
             $nexY = $pdf->GetY();
             //$height_note=$nexY-$tab_top;
             //Rect prend une longueur en 3eme param
@@ -374,7 +375,7 @@ public function writeLine(&$pdf, $line, $curY, $outputlangs)
     $duration=formatTime($line['duration'], -2);
     // Ref of task
     $pdf->SetXY($this->posxref, $curY);
-    $pdf->MultiCell($this->posxdate-$this->posxref, 0, dol_string_nohtmltag($ref), 0, 'L');
+    $pdf->MultiCell($this->posxdate-$this->posxref, 0, dol_string_nohtmltag($ref + 1), 0, 'L');
     $nexY=max($nexY, $pdf->GetY());
     // date
     $pdf->SetXY($this->posxdate, $curY);
@@ -452,7 +453,7 @@ public function tableau(&$pdf, $tab_top, $tab_height, $heightoftitleline, $outpu
         //duration title
         $pdf->SetXY($this->posxduration, $tab_top+1);
         if($conf->global->TIMESHEET_INVOICE_TIMETYPE == "hours") {
-            $pdf->MultiCell($this->page_largeur - $this->marge_droite - $this->posxduration, 3, 'h:m', 0, 'R');
+            $pdf->MultiCell($this->page_largeur - $this->marge_droite - $this->posxduration, 3, 'Tijd (uur)', 0, 'R');
         } else{
             $pdf->MultiCell($this->page_largeur - $this->marge_droite - $this->posxduration, 3, $outputlangs->transnoentities("Days"), 0, 'R');
         }
