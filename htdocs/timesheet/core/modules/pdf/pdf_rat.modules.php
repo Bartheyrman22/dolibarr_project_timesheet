@@ -80,7 +80,7 @@ class pdf_rat extends ModelPDFTimesheetReport
         //$this->posxprogress=$this->marge_gauche+140;
         //$this->posxdatestart=$this->marge_gauche+152;
         //$this->posxdateend=$this->marge_gauche+170;
-        $this->posxduration=$this->marge_gauche+175;
+        $this->posxduration=$this->marge_gauche+160;
         if ($this->page_largeur < 210) {
             // To work with US executive format {
             $this->posxref-=20;
@@ -234,13 +234,13 @@ public function writeFile($object, $outputlangs)
 
         $tab_height_newpage = (getConf('MAIN_PDF_DONOTREPEAT_HEAD') == false?170:202);
         //$cur_tab_height = $tab_height;
-        $HeightSignBox = 30;
+        $HeightSignBox = 20;
         $heightforlastfooter = (getConf('TIMESHEET_PDF_HIDE_SIGNBOX') == 1)?7:($HeightSignBox + 7);
         $heightforfooter = $this->marge_basse+1;        // Height reserved to output the footer(value include bottom margin)
         $pageposbefore = 0;
         $heightoftitleline = 6;
         $bottomlasttab = $this->page_hauteur - $heightforlastfooter - $heightforfooter + 1;
-        $widthSignBox = ($this->page_largeur-$this->marge_gauche-$this->marge_droite)/2-1;
+        $widthSignBox = ($this->page_largeur-$this->marge_gauche-$this->marge_droite)/2-0.5;
         $pdf->AddPage();
         //init pdf cursor
         $pdf->setPage($pagenb);
@@ -282,7 +282,7 @@ public function writeFile($object, $outputlangs)
                 //pagebreak mentionned on the next line
                 $addpagebreak = true;
             }
-            
+
            // action when a page break is required : rollback and write on the next page
             if ($addpagebreak == true) {
                 $starty=10;
@@ -337,6 +337,7 @@ public function writeFile($object, $outputlangs)
             $pdf->SetFont('', '', $default_font_size - 1);
             $pdf->writeHTMLCell(80, 3, $this->marge_gauche+1, $bottomlasttab+7, $outputlangs->transnoentities('employeeSignature'), 0, 1);
             $pdf->writeHTMLCell(80, 3, $this->marge_gauche+$widthSignBox+2, $bottomlasttab+7, $outputlangs->transnoentities('customerSignature'), 0, 1);
+            $pdf->writeHTMLCell($widthSignBox*2, 3, $this->marge_gauche+1, $bottomlasttab+$HeightSignBox+7, '<small>Protest op deze timesheet dient binnen de 5 werkdagen te gebeuren. Bij gebreke aan protest binnen de 5 werkdagen of bij gebreke aan ondertekening en tournering binnen de 5 werkdagen wordt de timesheet als  goedgekeurd beschouwd en zal er worden gefactureerd conform de timesheet.</small>', 0, 1);
             $nexY = $pdf->GetY();
             //$height_note = $nexY-$tab_top;
             //Rect prend une longueur en 3eme param
@@ -384,7 +385,7 @@ public function writeLine(&$pdf, $line, $curY, $outputlangs)
     $duration = formatTime($line['duration'], -2);
     // Ref of task
     $pdf->SetXY($this->posxref, $curY);
-    $pdf->MultiCell($this->posxdate-$this->posxref, 0, dol_string_nohtmltag($ref), 0, 'L');
+    $pdf->MultiCell($this->posxdate-$this->posxref, 0, dol_string_nohtmltag($ref + 1), 0, 'L');
     $nexY = $pdf->GetY();
     // date
     $pdf->SetXY($this->posxdate, $curY);
@@ -462,7 +463,7 @@ public function tableau(&$pdf, $tab_top, $tab_height, $heightoftitleline, $outpu
         //duration title
         $pdf->SetXY($this->posxduration, $tab_top+1);
         if (getConf('TIMESHEET_INVOICE_TIMETYPE','days') == "hours") {
-            $pdf->MultiCell($this->page_largeur - $this->marge_droite - $this->posxduration, 3, 'h:m', 0, 'R');
+            $pdf->MultiCell($this->page_largeur - $this->marge_droite - $this->posxduration, 3, 'Tijd (uur)', 0, 'R');
         } else{
             $pdf->MultiCell($this->page_largeur - $this->marge_droite - $this->posxduration, 3, $outputlangs->transnoentities("Days"), 0, 'R');
         }
@@ -515,7 +516,7 @@ public function pageHead(&$pdf, $object, $showaddress, $outputlangs, $projectid,
         $posy_l =  $pdf->GetY() + 1 ;
     } else {
         $pdf->MultiCell(100, 4, $outputlangs->transnoentities($this->emetteur->name), 0, 'L');
-        if ($showaddress == true){   
+        if ($showaddress == true){
             $pdf->MultiCell(100, $pdf->GetY() + 1, $outputlangs->transnoentities($mysoc->address), 0, 'L');
             $pdf->MultiCell(100, $pdf->GetY() + 1, $outputlangs->transnoentities($mysoc->zip.' - '.$mysoc->town), 0, 'L');
         }
@@ -525,13 +526,13 @@ public function pageHead(&$pdf, $object, $showaddress, $outputlangs, $projectid,
 //pdf title
     $pdf->SetFont('', 'B', $default_font_size +1);
     $pdf->SetXY($this->marge_gauche+$logoWidth, $posy);
-    
+
     $pdf->SetTextColor(0, 0, 60);
     $pdf->MultiCell($this->page_largeur - $this->marge_gauche -  $this->marge_droite  - $logoWidth, 4, $outputlangs->convToOutputCharset($project->ref." - ".$project->title), '', 'R');
     $pdf->SetFont('', '', $default_font_size);
     $posy = $pdf->GetY() + 1;
     //dateStart
-    
+
     $pdf->SetXY($posx, $posy);
     $pdf->SetTextColor(0, 0, 60);
     $pdf->MultiCell(100, 4, $outputlangs->transnoentities("DateStart")." : " . dol_print_date($object->startDate, 'day', false, $outputlangs, true), '', 'R');
@@ -542,7 +543,7 @@ public function pageHead(&$pdf, $object, $showaddress, $outputlangs, $projectid,
     $posy = $pdf->GetY() + 1;
     // third party name
     if ($project->thirdparty->id > 0) {
-            
+
             $pdf->SetXY($posx, $posy);
             $pdf->MultiCell(100, 4, $outputlangs->transnoentities("ThirdParty")." : " . $project->thirdparty->getFullName($outputlangs), '', 'R');
             $posy = $pdf->GetY() + 1;
