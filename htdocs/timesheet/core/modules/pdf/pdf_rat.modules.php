@@ -60,7 +60,7 @@ class pdf_rat extends ModelPDFTimesheetReport
         $this->marge_gauche=isset($conf->global->MAIN_PDF_MARGIN_LEFT)?$conf->global->MAIN_PDF_MARGIN_LEFT:10;
         $this->marge_droite=isset($conf->global->MAIN_PDF_MARGIN_RIGHT)?$conf->global->MAIN_PDF_MARGIN_RIGHT:10;
         $this->marge_haute = isset($conf->global->MAIN_PDF_MARGIN_TOP)?$conf->global->MAIN_PDF_MARGIN_TOP:10;
-        $this->marge_basse = isset($conf->global->MAIN_PDF_MARGIN_BOTTOM)?$conf->global->MAIN_PDF_MARGIN_BOTTOM:10;
+        $this->marge_basse = isset($conf->global->MAIN_PDF_MARGIN_BOTTOM)?$conf->global->MAIN_PDF_MARGIN_BOTTOM:0;
         $this->option_logo = 1;// Affiche logo FAC_PDF_LOGO
         $this->option_tva = 1;// Gere option tva FACTURE_TVAOPTION
         $this->option_codeproduitservice = 1;// Affiche code produit-service
@@ -225,7 +225,7 @@ public function writeFile($object, $outputlangs)
         $tab_height = $writable_height - $height_note;
         //$cur_tab_height = $tab_height;
         $HeightSignBox = 20;
-        $heightforlastfooter = ($conf->global->TIMESHEET_PDF_HIDE_SIGNBOX == 1)?7:($HeightSignBox + 7);
+        $heightforlastfooter = ($conf->global->TIMESHEET_PDF_HIDE_SIGNBOX == 1)?7:($HeightSignBox + 20);
         $heightforfooter = $this->marge_basse+1;        // Height reserved to output the footer(value include bottom margin)
         $pageposbefore = 0;
         $heightoftitleline = 6;
