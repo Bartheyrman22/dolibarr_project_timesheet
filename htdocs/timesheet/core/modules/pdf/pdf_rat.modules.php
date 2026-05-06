@@ -236,7 +236,7 @@ public function writeFile($object, $outputlangs)
         $tab_height_newpage = (getConf('MAIN_PDF_DONOTREPEAT_HEAD') == false?170:202);
         //$cur_tab_height = $tab_height;
         $HeightSignBox = 20;
-        $heightforlastfooter = (getConf('TIMESHEET_PDF_HIDE_SIGNBOX') == 1)?7:($HeightSignBox + 7);
+        $heightforlastfooter = (getConf('TIMESHEET_PDF_HIDE_SIGNBOX') == 1)?7:($HeightSignBox + 14);
         $heightforfooter = $this->marge_basse+1;        // Height reserved to output the footer(value include bottom margin)
         $pageposbefore = 0;
         $heightoftitleline = 6;
